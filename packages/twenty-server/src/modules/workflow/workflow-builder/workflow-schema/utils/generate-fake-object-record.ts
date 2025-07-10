@@ -18,6 +18,7 @@ export const generateFakeObjectRecord = ({
       nameSingular:
         objectMetadataInfo.objectMetadataItemWithFieldsMaps.nameSingular,
       fieldIdName: 'id',
+      objectMetadataId: objectMetadataInfo.objectMetadataItemWithFieldsMaps.id,
     },
     fields: generateObjectRecordFields({
       objectMetadataInfo,
