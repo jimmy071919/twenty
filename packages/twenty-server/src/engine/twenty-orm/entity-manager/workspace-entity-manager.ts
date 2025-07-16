@@ -1469,6 +1469,7 @@ export class WorkspaceEntityManager extends EntityManager {
     entities: QueryDeepPartialEntityWithRelationConnect<Entity>[],
     target: EntityTarget<Entity>,
     permissionOptions?: PermissionOptions,
+    queryRunner?: QueryRunner,
   ): Promise<QueryDeepPartialEntity<Entity>[]> {
     const nestedRelationQueryFieldsByEntityIndex =
       extractNestedRelationFieldsByEntityIndex(entities);
@@ -1483,6 +1484,7 @@ export class WorkspaceEntityManager extends EntityManager {
       target,
       permissionOptions,
       nestedRelationQueryFieldsByEntityIndex,
+      queryRunner,
     });
 
     return updatedEntitiesWithConnect;
@@ -1493,11 +1495,13 @@ export class WorkspaceEntityManager extends EntityManager {
     target,
     permissionOptions,
     nestedRelationQueryFieldsByEntityIndex,
+    queryRunner,
   }: {
     entities: QueryDeepPartialEntityWithRelationConnect<Entity>[];
     target: EntityTarget<Entity>;
     permissionOptions?: PermissionOptions;
     nestedRelationQueryFieldsByEntityIndex: RelationNestedQueryFieldsByEntityIndex;
+    queryRunner?: QueryRunner;
   }): Promise<QueryDeepPartialEntity<Entity>[]> {
     const objectMetadata = getObjectMetadataFromEntityTarget(
       target,
@@ -1518,6 +1522,7 @@ export class WorkspaceEntityManager extends EntityManager {
     const recordsToConnectWithConfig = await this.executeConnectQueries(
       relationConnectQueryConfigs,
       permissionOptions,
+      queryRunner,
     );
 
     const updatedEntities = this.updateEntitiesWithRecordToConnectId<Entity>(
@@ -1531,6 +1536,7 @@ export class WorkspaceEntityManager extends EntityManager {
   private async executeConnectQueries(
     relationConnectQueryConfigs: Record<string, RelationConnectQueryConfig>,
     permissionOptions?: PermissionOptions,
+    queryRunner?: QueryRunner,
   ): Promise<[RelationConnectQueryConfig, Record<string, unknown>[]][]> {
     const AllRecordsToConnectWithConfig: [
       RelationConnectQueryConfig,
@@ -1548,7 +1554,7 @@ export class WorkspaceEntityManager extends EntityManager {
       const recordsToConnect = await this.createQueryBuilder(
         connectQueryConfig.targetObjectName,
         connectQueryConfig.targetObjectName,
-        undefined,
+        queryRunner,
         permissionOptions,
       )
         .select(getRecordToConnectFields(connectQueryConfig))
